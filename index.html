@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="res/bootstrap.css">
+    <script src="res/jquery.js"></script>
+    <script src="res/bootstrap.js"></script>
+    <script src="res/keypress-2.1.4.min.js"></script>
+    <script type="text/javascript" src="res/table2CSV.js" > </script>
+
+    <script type="text/javascript">
+        // key: keypress specification
+        // oneshot: one shot event
+        // code: short code
+        // desc: optional description (desc itself must be present)
+        // label: optional; button label (label should be missing if not necessary)
+        var eventKeyMap = [
+  { key: 'c', oneshot: true,  code: 'c', desc: 'Contact'        }
+, { key: 'v', oneshot: false, code: 'v', desc: 'Vibration'      }
+, { key: 'u', oneshot: false, code: 'u', desc: 'Legs up'        }
+, { key: 'r', oneshot: false, code: 'r', desc: 'Legs rub'       }
+, { key: 'b', oneshot: false, code: 'b', desc: 'Bouncing'       }
+, { key: 'w', oneshot: false, code: 'w', desc: 'Wrapping'       }
+, { key: 'o', oneshot: false, code: 'o', desc: 'Gift Offering'  }
+, { key: 'space', oneshot: true, code: 'x', desc: '', label: 'Custom', exclusive: true }
+, { key: 'shift space', oneshot: false, code: 'y', desc: '', label: 'Long Custom', exclusive: true }
+        ];
+
+        var DEBUG=0;
+    </script>
+
+	<title>Track My Spider by steiny</title>
+<!--
+
+            _____                   ___       ___
+           /     \       ___       |   \     /   |
+          /   ___/      |   |      |    \   /    |
+         /   /       ___|   |___   |     \ /     |
+         |   |      |           |  |  |\  V  /|  |
+         \   \___   |___     ___|  |  | \   / |  |
+          \      \      |   |      |  |  \_/  |  |
+           \_____/      |___|      |__|       |__|
+
+                      ___       ___
+                     /   \     /   \
+                    /     \   /     \
+                   /       \ /       \
+      _______      |        V        |
+     |       |     \                 /
+     |_______|      \               /
+                     \             /
+      _______         \           /
+     |       |         \         /
+     |_______|          \       /
+                         \     /
+                          \   /
+                           \ /
+                            V
+
+-->
+
+    <style>
+
+    </style>
+
+  </head>
+  <body role="document">
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+              <div id="navbar" class="navbar-header">
+                  <div class="nav navbar-nav">
+                        <p id="time" style="color: white; font-size: large" class="navbar-text"></p>
+                        <button id="btn-start" type="button" class="btn btn-success navbar-btn" onclick="start()" disabled="disabled">Start</button>
+                        <button id="btn-save"  type="button" class="btn btn-success navbar-btn" onclick="save()">Save</button>
+                        <span id="cmdbuttons"></span>
+                  </div>
+              </div><!--/.nav-collapse -->
+          </div>
+      </nav>
+
+      <div class="container theme-showcase" role="main">
+
+          <div class="jumbotron alert-info" style="margin-top:10%;">
+              <h1>Track My Spider</h1>
+              <h2>for Carlita</h2>
+              <p class="thumbnail center-block" style="width: 50%;">
+                  <img src="res/Pisaura_mirabilis.jpg" />
+              </p>
+          </div>
+
+          <div class="jumbotron">
+                <table id="eventTable" class="table table-hover">
+                    <thead><tr><th>#</th><th>Begin</th><th>End</th><th>Eventcode</th><th>Description</th></tr></thead>
+                    <tbody id="eventTableBody"></tbody>
+                </table>
+          </div>
+      </div> <!-- /container -->
+
+      <script type="text/javascript">
+
+var begin = 0;
+var eventId = 1;
+var listener = new window.keypress.Listener();
+var blockKeyEvents = true;
+
+function pad(num, size) {
+    var s = "000000000" + num;
+    return s.substr(s.length-size);
+}
+
+function now()
+{
+    var now = new Date();
+    return Math.round(now.getTime() / 1000) - begin;
+}
+
+function stamp(diff) {
+    var sec = diff;
+    var min = Math.floor(sec / 60);
+    sec -= min * 60;
+    var hours = Math.floor(min / 60);
+    min -= hours * 60;
+
+    var output = "";
+    if(hours != 0)
+        output += pad(hours, 2) + ":";
+
+    output += pad(min, 2) + ":" + pad(sec, 2);
+    return output;
+}
+
+function timer() {
+    var output = "00:00";
+    if(begin != 0)
+    {
+        var diff = now();
+        output = stamp(diff);
+    }
+    document.getElementById("time").innerHTML = "" + output;
+
+    debug_timer();
+}
+
+window.onload = function() {
+    window.onbeforeunload = function() {
+        return "Data will be lost if you leave the page. Are you sure?";
+    }
+    timer();
+    setInterval("timer()", 500);
+    debug("register listeners");
+    registerKeyListeners();
+    createKeyButtons();
+
+    // enable starting
+    $("#btn-start").removeAttr("disabled");
+}
+
+function start() {
+    begin = now();
+    blockKeyEvents = false;
+    $("#btn-start").attr("disabled", "disabled");
+    $("#btn-start").blur();
+}
+
+
+function addEvent(eventKey) {
+    function createTableEntry() {
+        var table = document.getElementById("eventTableBody");
+        var row = document.createElement("tr");
+        table.appendChild(row);
+        for(var i = 0; i < 5; ++i) {
+            var cell = document.createElement("td");
+            row.appendChild(cell);
+            cell.id = "eventTable-" + eventId + "-" + i;
+            var obj = arguments[i];
+            if(!(obj instanceof Object))
+                obj = document.createTextNode(arguments[i]);
+            cell.appendChild(obj);
+        }
+        row.scrollIntoView();
+    }
+
+    var begin = "" + now();
+    var end = "";
+    if(eventKey.oneshot == true)
+        end = begin;
+
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = "Event Description";
+    inp.value = eventKey.desc;
+    inp.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if(event.keyCode == 13) {
+            this.blur();
+        }
+    });
+    inp.addEventListener("focus", function(event) {
+        blockKeyEvents = true;
+    });
+    inp.addEventListener("blur", function(event) {
+        blockKeyEvents = false;
+    });
+
+    createTableEntry(eventId, begin, end, eventKey.code, inp);
+    eventId += 1;
+
+    // set focus
+    if(eventKey.desc == "")
+        inp.focus();
+
+    return eventId - 1;
+}
+
+// called by keypress with this = row from eventKeyMap
+function onKeyEvent()
+{
+    debug(this);
+    if(blockKeyEvents)
+    {
+        debug("key events blocked");
+        return true;
+    }
+
+    if(!this.oneshot)
+    {
+        $(this.button).removeClass("btn-default btn-primary");
+        if(this.cei == 0) // event not active now => create new event and remember id
+        {
+            this.cei = addEvent(this);
+            $(this.button).addClass("btn-primary");
+            debug("this.cei == "+this.cei);
+        }
+        else // event now inactive => write end time
+        {
+            debug("write end time");
+            $("#eventTable-" + this.cei + "-2").html("" + now());
+            $(this.button).addClass("btn-default");
+            this.cei = 0;
+        }
+    }
+    else
+    {
+        this.cei = addEvent(this);
+    }
+}
+
+function registerKeyListeners()
+{
+    for(i = 0; i < eventKeyMap.length; i++)
+    {
+        var exclusive = false;
+        if(typeof eventKeyMap[i].exclusive !== 'undefined')
+            exclusive = eventKeyMap[i].exclusive;
+        debug("register event handler for " + eventKeyMap[i].key);
+        eventKeyMap[i].cei = 0;
+        listener.register_combo(
+                {
+                    "keys" : eventKeyMap[i].key,
+                    "on_keydown" : onKeyEvent,
+                    "this" : eventKeyMap[i],
+                    "prevent_repeat" : false,
+                    "is_unordered" : false,
+                    "is_exclusive" : false,
+                    "is_solitary" : exclusive
+                });
+    }
+}
+
+function createKeyButtons()
+{
+    var container = document.getElementById("cmdbuttons");
+    for(i = 0; i < eventKeyMap.length; i++)
+    {
+        // button itself
+        var btn = document.createElement("button");
+        btn.className = "btn btn-default navbar-btn";
+        btn.type = "submit";
+        var label = "";
+
+        if(typeof eventKeyMap[i].label !== 'undefined')
+              label = eventKeyMap[i].label + " ";
+        else
+            if(eventKeyMap[i].desc !== '')
+              label = eventKeyMap[i].desc + " ";
+        var text = document.createTextNode(label + "(" + eventKeyMap[i].key + ")");
+        btn.appendChild(text);
+        container.appendChild(btn);
+
+        // event
+        (function(i) {
+            btn.addEventListener("click", function() {
+                debug("onKeyEvent by button[" + i + "]");
+                onKeyEvent.call(eventKeyMap[i]);
+            });
+        })(i);
+
+        // remember button
+        eventKeyMap[i].button = btn;
+    }
+}
+
+function debug(text)
+{
+    if(DEBUG != 0)
+        console.log(text);
+}
+
+function debug_timer()
+{
+    if(DEBUG == 0) return;
+    function logvar(name, val) {
+        console.log(name + " == " + val);
+    }
+
+
+    console.log("tick");
+    logvar("blockKeyEvents", blockKeyEvents);
+}
+
+function save()
+{
+    $("#eventTable").table2CSV();
+}
+
+      </script>
+
+  </body></html>
