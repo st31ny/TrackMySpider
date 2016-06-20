@@ -195,19 +195,48 @@ function start() {
 
 function addEvent(eventKey) {
     function createTableEntry() {
+        var widecolumn = 4;
         var table = document.getElementById("eventTableBody");
         var row = document.createElement("tr");
         table.appendChild(row);
-        for(var i = 0; i < 5; ++i) {
+        for(var i = 0; i < arguments.length; ++i) {
             var cell = document.createElement("td");
             row.appendChild(cell);
             cell.id = "eventTable-" + eventId + "-" + i;
             var obj = arguments[i];
             if(!(obj instanceof Object))
-                obj = document.createTextNode(arguments[i]);
+            {
+                if(i==0)
+                {
+                    obj = document.createTextNode(arguments[i]);
+                } else
+                {
+                    obj = document.createElement("input");
+                    obj.type = "text";
+                    obj.value = arguments[i];
+                    if(i != widecolumn)
+                        obj.style="width: 100px;";
+                    else
+                        obj.style="width: 300px;";
+
+                    obj.addEventListener("keyup", function(event) {
+                        event.preventDefault();
+                        if(event.keyCode == 13) {
+                            this.blur();
+                        }
+                    });
+                    obj.addEventListener("focus", function(event) {
+                        blockKeyEvents = true;
+                    });
+                    obj.addEventListener("blur", function(event) {
+                        blockKeyEvents = false;
+                    });
+                }
+            }
             cell.appendChild(obj);
         }
         row.scrollIntoView();
+        return row;
     }
 
     var begin = "" + stamp(now());
@@ -215,30 +244,15 @@ function addEvent(eventKey) {
     if(eventKey.oneshot == true)
         end = begin;
 
-    var inp = document.createElement("input");
-    inp.type = "text";
-    inp.placeholder = "Event Description";
-    inp.value = eventKey.desc;
-    inp.addEventListener("keyup", function(event) {
-        event.preventDefault();
-        if(event.keyCode == 13) {
-            this.blur();
-        }
-    });
-    inp.addEventListener("focus", function(event) {
-        blockKeyEvents = true;
-    });
-    inp.addEventListener("blur", function(event) {
-        blockKeyEvents = false;
-    });
-
-    createTableEntry(eventId, begin, end, eventKey.code, inp);
-    eventId += 1;
 
     // set focus
     if(eventKey.desc == "")
-        inp.focus();
+    {
+        $("#eventTable-" + eventId + "-4").find("input").eq(0).focus();
+        debug("may the focus be with you");
+    }
 
+    eventId += 1;
     return eventId - 1;
 }
 
