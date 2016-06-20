@@ -254,11 +254,11 @@ function onKeyEvent()
 
     if(!this.oneshot)
     {
-        $(this.button).removeClass("btn-default btn-primary");
+        $(this.button).removeClass("btn-default btn-danger");
         if(this.cei == 0) // event not active now => create new event and remember id
         {
             this.cei = addEvent(this);
-            $(this.button).addClass("btn-primary");
+            $(this.button).addClass("btn-danger");
             debug("this.cei == "+this.cei);
         }
         else // event now inactive => write end time
@@ -309,12 +309,12 @@ function createKeyButtons()
         var label = "";
 
         if(typeof eventKeyMap[i].label !== 'undefined')
-              label = eventKeyMap[i].label + " ";
+            label = eventKeyMap[i].label + " ";
         else
             if(eventKeyMap[i].desc !== '')
-              label = eventKeyMap[i].desc + " ";
-        var text = document.createTextNode(label + "(" + eventKeyMap[i].key + ")");
-        btn.appendChild(text);
+                label = eventKeyMap[i].desc + " ";
+        var text = label + "(<span style='font-weight: bold;'>" + eventKeyMap[i].key + "</span>)";
+        $(btn).html(text);
         container.appendChild(btn);
 
         // event
