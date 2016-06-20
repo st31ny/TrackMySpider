@@ -30,6 +30,12 @@
         var DEBUG=0;
     </script>
 
+<style>
+body {
+    font-size: 20px;
+}
+</style>
+
 	<title>Track My Spider by steiny</title>
 <!--
 
@@ -67,32 +73,51 @@
   </head>
   <body role="document">
       <!-- Fixed navbar -->
-      <nav class="navbar navbar-inverse navbar-fixed-top">
-          <div class="container-fluid">
+      <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
               <div id="navbar" class="navbar-header">
-                  <div class="nav navbar-nav">
-                        <p id="time" style="color: white; font-size: large" class="navbar-text"></p>
-                        <button id="btn-start" type="button" class="btn btn-success navbar-btn" onclick="start()" disabled="disabled">Start</button>
-                        <button id="btn-save"  type="button" class="btn btn-success navbar-btn" onclick="save()">Save</button>
-                        <span id="cmdbuttons"></span>
-                  </div>
-              </div><!--/.nav-collapse -->
+                                                <span id="cmdbuttons"></span>
+              </div>
           </div>
-      </nav>
+      </div>
+      <div class="navbar navbar-inverse navbar-fixed-top" style="margin-top: 45px;">
+          <div class="container">
+            <div class="navbar-header">
+                <span id="cmdbuttons-1"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="navbar navbar-inverse navbar-fixed-bottom">
+            <div class="container">
+                <div class="navbar-header">
+                    <button id="btn-start" type="button" class="btn btn-success navbar-btn" onclick="start()" disabled="disabled">Start</button>
+                    <button id="btn-save"  type="button" class="btn btn-success navbar-btn" onclick="save()">Save</button>
+                    <p id="time" style="color: white; font-size: large" class="navbar-text"></p>
+                </div>
+            </div>
+        </div>
 
       <div class="container theme-showcase" role="main">
+        <div class="jumbotron alert-info" style="margin-top: 10%; padding: 20px;">
+            <div class="row">
+                <div class="col-sm-7">
+                      <h1 style="font-size: 250%;">Track My Spider</h1>
+                      <h2 style="padding-left: 20px;">for Carlita</h2>
+                </div>
+                <div class="col-sm-5">
+                    <p class="thumbnail center-block" style="width: 100%;">
+                        <img src="res/Pisaura_mirabilis.jpg" />
+                    </p>
+                </div>
+            </div>
+        </div>
 
-          <div class="jumbotron alert-info" style="margin-top:10%;">
-              <h1>Track My Spider</h1>
-              <h2>for Carlita</h2>
-              <p class="thumbnail center-block" style="width: 50%;">
-                  <img src="res/Pisaura_mirabilis.jpg" />
-              </p>
-          </div>
-
-          <div class="jumbotron">
+          <div class="jumbotron" style="margin-top: 0px; padding: 20px;">
                 <table id="eventTable" class="table table-hover">
-                    <thead><tr><th>#</th><th>Begin</th><th>End</th><th>Eventcode</th><th>Description</th></tr></thead>
+                    <thead>
+                        <tr style="font-weight: bold;"><td>#</td><td>Begin</td><td>End</td><td>Eventcode</td><td>Description</td><td></td></tr>
+                    </thead>
                     <tbody id="eventTableBody"></tbody>
                 </table>
           </div>
