@@ -210,7 +210,7 @@ function addEvent(eventKey) {
         row.scrollIntoView();
     }
 
-    var begin = "" + now();
+    var begin = "" + stamp(now());
     var end = "";
     if(eventKey.oneshot == true)
         end = begin;
@@ -264,7 +264,7 @@ function onKeyEvent()
         else // event now inactive => write end time
         {
             debug("write end time");
-            $("#eventTable-" + this.cei + "-2").html("" + now());
+            $("#eventTable-" + this.cei + "-2").find("input").eq(0).val("" + stamp(now()));
             $(this.button).addClass("btn-default");
             this.cei = 0;
         }
