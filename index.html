@@ -18,13 +18,15 @@
         var eventKeyMap = [
   { key: 'c', oneshot: true,  code: 'c', desc: 'Contact'        }
 , { key: 'v', oneshot: false, code: 'v', desc: 'Vibration'      }
-, { key: 'u', oneshot: false, code: 'u', desc: 'Legs up'        }
-, { key: 'r', oneshot: false, code: 'r', desc: 'Legs rub'       }
+, { key: 'u', oneshot: false, code: 'u', desc: 'Legs up', navbar: 1     }
+, { key: 'r', oneshot: false, code: 'r', desc: 'Legs rub', navbar: 1       }
 , { key: 'b', oneshot: false, code: 'b', desc: 'Bouncing'       }
-, { key: 'w', oneshot: false, code: 'w', desc: 'Wrapping'       }
-, { key: 'o', oneshot: false, code: 'o', desc: 'Gift Offering'  }
-, { key: 'space', oneshot: true, code: 'x', desc: '', label: 'Custom', exclusive: true }
-, { key: 'shift space', oneshot: false, code: 'y', desc: '', label: 'Long Custom', exclusive: true }
+, { key: 'w', oneshot: false, code: 'w', desc: 'Wrapping' , navbar: 1       }
+, { key: 'o', oneshot: false, code: 'o', desc: 'Gift Offering', navbar: 1  }
+, { key: 'a', oneshot: true,  code: 'a', desc: 'Female accepts', navbar: 1 }
+, { key: 'g', oneshot: true,  code: 'g', desc: 'Gift'   }
+, { key: 's', oneshot: false, code: 's', desc: 'Sync' }
+, { key: 'x', oneshot: false, code: 'x', desc: '', label: 'Random Event' }
         ];
 
         var DEBUG=0;
