@@ -39,7 +39,7 @@ You should have received a copy of the GNU General Public License along with thi
 , { key: 'x', oneshot: false, code: 'x', desc: '', label: 'Random Event' }
         ];
 
-        var DEBUG=0;
+        var DEBUG=1;
     </script>
 
 <style>
@@ -128,9 +128,9 @@ body {
           <div class="jumbotron" style="margin-top: 0px; padding: 20px;">
                 <table id="eventTable" class="table table-hover">
                     <thead>
-                        <tr><td /><td>Date:</td><td><input type="text" style="widtd: 100px"/></td><td /><td /><td /></tr>
-                        <tr><td /><td>Male ID:</td><td><input type="text" style="widtd: 100px;"/></td><td /><td /><td /></tr>
-                        <tr><td /><td>Trial #:</td><td><input type="text" style="widtd: 100px;"/></td><td /><td /><td /></tr>
+                        <tr><td /><td>Date:</td><td><input type="text" class="blockinginput" /></td><td /><td /><td /></tr>
+                        <tr><td /><td>Male ID:</td><td><input type="text" class="blockinginput" /></td><td /><td /><td /></tr>
+                        <tr><td /><td>Trial #:</td><td><input type="text" class="blockinginput" /></td><td /><td /><td /></tr>
                         <tr style="font-weight: bold;"><td>#</td><td>Begin</td><td>End</td><td>Eventcode</td><td>Description</td><td></td></tr>
                     </thead>
                     <tbody id="eventTableBody"></tbody>
@@ -144,6 +144,22 @@ var begin = 0;
 var eventId = 1;
 var listener = new window.keypress.Listener();
 var blockKeyEvents = true;
+
+function BlockKeyEvents()
+{
+    blockKeyEvents = true;
+}
+function UnBlockKeyEvents()
+{
+    blockKeyEvents = false;
+}
+function UnBlockIfEnter(event) {
+    event.preventDefault();
+    if(event.keyCode == 13) {
+        this.blur();
+    }
+}
+
 
 function pad(num, size) {
     var s = "000000000" + num;
@@ -191,6 +207,7 @@ window.onload = function() {
     setInterval("timer()", 500);
     debug("register listeners");
     registerKeyListeners();
+    registerBlockingInputListeners();
     createKeyButtons();
 
     // enable starting
@@ -231,18 +248,9 @@ function addEvent(eventKey) {
                     else
                         obj.style="width: 300px;";
 
-                    obj.addEventListener("keyup", function(event) {
-                        event.preventDefault();
-                        if(event.keyCode == 13) {
-                            this.blur();
-                        }
-                    });
-                    obj.addEventListener("focus", function(event) {
-                        blockKeyEvents = true;
-                    });
-                    obj.addEventListener("blur", function(event) {
-                        blockKeyEvents = false;
-                    });
+                    obj.addEventListener("keyup", UnBlockIfEnter);
+                    obj.addEventListener("focus", BlockKeyEvents);
+                    obj.addEventListener("blur", UnBlockKeyEvents);
                 }
             }
             cell.appendChild(obj);
@@ -373,6 +381,16 @@ function createKeyButtons()
         // remember button
         eventKeyMap[i].button = btn;
     }
+}
+
+function registerBlockingInputListeners()
+{
+    $(".blockinginput").each(function(index) {
+        debug(this);
+        this.addEventListener("keyup", UnBlockIfEnter);
+        this.addEventListener("focus", BlockKeyEvents);
+        this.addEventListener("blur", UnBlockKeyEvents);
+    });
 }
 
 function debug(text)
