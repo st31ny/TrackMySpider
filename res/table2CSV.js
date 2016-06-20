@@ -1,3 +1,4 @@
+// based on source from http://kunalbabre.com/projects/table2CSV.php
 jQuery.fn.table2CSV = function(options) {
     var options = jQuery.extend({
         separator: ',',
