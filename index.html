@@ -299,9 +299,16 @@ function registerKeyListeners()
 
 function createKeyButtons()
 {
-    var container = document.getElementById("cmdbuttons");
     for(i = 0; i < eventKeyMap.length; i++)
     {
+        // get the container
+        var navbar = ""
+        if(typeof eventKeyMap[i].navbar !== 'undefined')
+        {
+            navbar = "-" + eventKeyMap[i].navbar;
+        }
+        var container = document.getElementById("cmdbuttons" + navbar);
+
         // button itself
         var btn = document.createElement("button");
         btn.className = "btn btn-default navbar-btn";
