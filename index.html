@@ -244,6 +244,18 @@ function addEvent(eventKey) {
     if(eventKey.oneshot == true)
         end = begin;
 
+    var deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-danger";
+    deleteBtn.type = "submit";
+    var content = document.createTextNode("x");
+    deleteBtn.appendChild(content);
+    var row = createTableEntry(eventId, begin, end, eventKey.code, eventKey.desc, deleteBtn);
+    (function(row){
+        deleteBtn.addEventListener("click", function(event) {
+            row.parentNode.removeChild(row);
+        });
+    })(row);
+
 
     // set focus
     if(eventKey.desc == "")
